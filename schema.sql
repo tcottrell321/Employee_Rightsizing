@@ -40,17 +40,22 @@ CREATE TABLE title (
 	titles VARCHAR NOT NULL,
 	from_date DATE NOT NULL, 
 	to_date DATE NOT NULL,
-	PRIMARY KEY (emp_no),
-	FOREIGN KEY (emp_no) REFERENCES employees (emp_no)
+	FOREIGN KEY (emp_no) References employees (emp_no)
 );
 
 CREATE TABLE dept_emp (
 	emp_no INT NOT NULL,
-	dept_no INT NOT NULL,
+	dept_no VARCHAR(4) NOT NULL,
 	from_date DATE NOT NULL,
-	to_date DATE NOT NULL,
-	PRIMARY KEY (emp_no),
-	FOREIGN KEY (emp_no) REFERENCES employees (emp_no)
+	to_date DATE NOT NULL
 );
 
+DROP TABLE title CASCADE;
+
+SELECT * FROM dept_emp;
 SELECT * FROM departments;
+SELECT * FROM dept_manager;
+SELECT * FROM employees;
+SELECT * FROM salaries;
+SELECT * FROM title;
+

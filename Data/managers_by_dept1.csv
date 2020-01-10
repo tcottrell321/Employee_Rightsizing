@@ -1,0 +1,10 @@
+dept_name,dept_no,first_name,last_name,emp_no,titles
+Marketing,d001,Vishwani,Minakawa,110039,Manager
+Finance,d002,Isamu,Legleitner,110114,Manager
+Human Resources,d003,Karsten,Sigstam,110228,Manager
+Production,d004,Oscar,Ghazalie,110420,Manager
+Development,d005,Leon,DasSarma,110567,Manager
+Quality Management,d006,Dung,Pesch,110854,Manager
+Sales,d007,Hauke,Zhang,111133,Manager
+Research,d008,Hilary,Kambil,111534,Manager
+Customer Service,d009,Yuchang,Weedman,111939,Manager

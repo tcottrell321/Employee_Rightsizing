@@ -1,0 +1,142 @@
+-- Additional Queries in PREP for CHALLENGE 7 ANALYSIS
+-- 
+-- In summarizing the data, it was discovered that additional
+-- filters needed to be applied to eliminate older records
+-- for a single employee. Time-stamped information such as 
+-- manager of each dept, current title for an employee, 
+-- and current employees. The following new tables were 
+-- produced filtering out any rows which were not the most 
+-- recent (dept_emp1, dept_manager1, title1)
+-- In addition, the salaries table was queried and found that
+-- no salary increases existed later than 1/31/2001 with over
+-- half of the employees not receiving raises since 1993. This
+-- makes this data very suspect and updated Salary information 
+-- should be sought out before the final report is released. 
+
+-- These 3 TABLES were produced by filtering out
+-- historical records and only going with the latest data
+SELECT * FROM title1;
+SELECT * FROM dept_emp1;
+
+
+-- CREATE TABLE title1 - filtered table eliminating duplicate records and inactive
+-- employees using the title.to-date = 1/1/9999. 
+
+SELECT emp_no, 
+	titles,
+	from_date,
+	to_date
+INTO title1
+FROM title
+WHERE (title.to_date = '1/1/9999');
+SELECT * FROM title1
+
+-- CREATE TABLE dept_emp1 - filtered dept_emp list called dept_emp1
+-- showing only current employees and their dept numbers
+SELECT  de.emp_no,
+		de.dept_no,
+        de.from_date,
+        de.to_date
+INTO dept_emp1
+FROM dept_emp AS de
+WHERE (de.to_date = '1/1/9999');
+SELECT * FROM dept_emp1;
+
+-- Adding the original 3 tables gave us a complete section
+-- of base tables
+SELECT * FROM departments;
+SELECT * FROM employees;
+SELECT * FROM salaries;
+
+
+-- CHALLENGE 7 PART 1 - Creating the retirees table
+-- This table joins the employee table (filtered by employee birth_date
+-- between 1985 and 1988, a hire_date between 1985 and 1988. 
+-- In addition, the title1 table has been filtered to only include the most
+-- recent title for active employees only and used to JOIN - along with the 
+-- Salaries table, to get additional information without duplicate records. 
+-- The Salary information however does not appear to be the most recent with no 
+-- updates after 1/31/2001. Before finalizing the list, updated salary data should 
+-- be obtained and the list rerun. 
+
+-- Using our new set of 6 tables above the following 
+-- additional queries were produced. 
+
+SELECT * FROM retirees;
+SELECT * FROM titles_count;
+SELECT * FROM mentor;
+SELECT * FROM managers_by_dept1;
+
+SELECT e.emp_no,
+	e.first_name,
+	e.last_name,
+	t.titles,
+	t.from_date,
+	s.salary
+INTO retirees
+FROM employees AS e
+RIGHT JOIN title1 AS t
+ON (t.emp_no = e.emp_no)
+RIGHT JOIN salaries AS s
+ON (t.emp_no = s.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+     AND (e.hire_date BETWEEN '1985-01-01' AND '1988-12-31');
+SELECT * FROM retirees;
+
+-- CHALLENGE 7 PArt 1 - COUNT OF TITLES RETIRING
+-- Count the number of retirees in each job title category. Using the title1 table
+-- duplicates employee records for prior titles were eliminated. Only the current title
+-- for active employees from the retiree list were counted. 
+
+SELECT COUNT(titles),titles
+INTO title1_count
+FROM retirees
+GROUP BY (titles)
+ORDER BY (count) DESC;
+
+-- CHALLENGE 7 PART 1 - Creating a Mentor Table
+-- this query joins the original employees table with the new title1 table. 
+-- The title1 table has already been filtered to only include active employees
+-- and current title (to-date = 9999-01-01). 
+-- Furthermore, the list was further filtered using a hire date in 1965. 
+-- More to say on this regarding the legality of using this criteria. 
+
+SELECT e.emp_no,
+	e.first_name,
+	e.last_name,
+	t.titles,
+	t.from_date,
+	t.to_date
+INTO mentor
+FROM employees AS e
+INNER JOIN title1 AS t
+ON (t.emp_no = e.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31');
+
+SELECT * FROM mentor;
+
+-- Query for Department Mgrs List
+-- Prior to filtering out duplicate managers for previous timeframes, 
+-- only 4 managers showed up in list. Using a filtered dept_manager1 list
+-- for the join, we now get all managers. 
+
+SELECT d.dept_name,
+	dm1.dept_no,
+	e.first_name,
+	e.last_name,
+	e.emp_no,
+	t.titles
+INTO managers_by_dept1
+FROM employees AS e
+INNER JOIN dept_manager1 AS dm1
+ON (dm1.emp_no = e.emp_no)
+INNER JOIN departments AS d
+ON (dm1.dept_no = d.dept_no)
+INNER JOIN title1 AS t
+ON (e.emp_no = t.emp_no)
+ORDER BY dept_no;
+SELECT * FROM managers_by_dept1;	
+
+
+
+
